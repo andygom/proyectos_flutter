@@ -1,9 +1,7 @@
-import 'package:chat_flutter/models/message_model.dart';
 import 'package:chat_flutter/src/services/database.dart';
 import 'package:chat_flutter/src/widgets/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class ConversationPage extends StatefulWidget {
   final String chatRoomId;
@@ -16,25 +14,29 @@ class ConversationPage extends StatefulWidget {
 class _ConversationPageState extends State<ConversationPage> {
   DataBaseMethods dataBaseMethods = new DataBaseMethods();
   TextEditingController messageController = new TextEditingController();
+  ScrollController controller = new ScrollController();
 
   Stream chatMessageStream;
 
   Widget ChatMessageList() {
-    return StreamBuilder(
-      stream: chatMessageStream,
-      builder: (context, snapshot) {
-        return snapshot.hasData
-            ? ListView.builder(
-                itemCount: snapshot.data.documents.length,
-                itemBuilder: (context, index) {
-                  return MessageTile(
-                      snapshot.data.documents[index].data['message'],
-                      snapshot.data.documents[index].data['sendBy'] ==
-                          Constants.MyName);
-                },
-              )
-            : Container();
-      },
+    return Container(
+      margin: EdgeInsets.only(bottom: 80),
+      child: StreamBuilder(
+        stream: chatMessageStream,
+        builder: (context, snapshot) {
+          return snapshot.hasData
+              ? ListView.builder(
+                  itemCount: snapshot.data.documents.length,
+                  itemBuilder: (context, index) {
+                    return MessageTile(
+                        snapshot.data.documents[index].data['message'],
+                        snapshot.data.documents[index].data['sendBy'] ==
+                            Constants.MyName);
+                  },
+                )
+              : Container();
+        },
+      ),
     );
   }
 
@@ -117,15 +119,17 @@ class MessageTile extends StatelessWidget {
           color: isSendByMe
               ? Theme.of(context).primaryColor
               : Theme.of(context).accentColor,
-          borderRadius: isSendByMe ? BorderRadius.only(
-            topLeft: Radius.circular(23),
-            topRight: Radius.circular(23),
-            bottomLeft: Radius.circular(23),
-          ) : BorderRadius.only(
-            topLeft: Radius.circular(23),
-            topRight: Radius.circular(23),
-            bottomRight: Radius.circular(23),
-          ),
+          borderRadius: isSendByMe
+              ? BorderRadius.only(
+                  topLeft: Radius.circular(23),
+                  topRight: Radius.circular(23),
+                  bottomLeft: Radius.circular(23),
+                )
+              : BorderRadius.only(
+                  topLeft: Radius.circular(23),
+                  topRight: Radius.circular(23),
+                  bottomRight: Radius.circular(23),
+                ),
         ),
         child: Text(
           message,
